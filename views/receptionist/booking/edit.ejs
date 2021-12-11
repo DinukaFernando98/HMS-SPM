@@ -1,0 +1,134 @@
+<% layout('layouts/boilerplate') %>
+
+<!-- BEGIN: Content-->
+<div class="app-content content ">
+    <div class="content-overlay"></div>
+    <div class="header-navbar-shadow"></div>
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-9 col-12 mb-2">
+                <div class="row breadcrumbs-top">
+                    <div class="col-12">
+                        <h2 class="content-header-title float-left mb-0">Edit Customer</h2>
+                        <div class="breadcrumb-wrapper">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/receptionist/dashboard">Receptionist</a>
+                                </li>
+                                <li class="breadcrumb-item"><a href="/receptionist/customer">Customers</a>
+                                </li>
+                                <li class="breadcrumb-item active">Edit
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-body">
+            <!-- Basic Inputs start -->
+            <section id="basic-input">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Edit Booking</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="/receptionist/booking/<%= booking._id %>?_method=PUT" method="post"
+                                    class="edit-booking validated-form" novalidate>
+                                    <div class="row">
+                                        <div class="col-xl-6 col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="customer">Customer</label>
+                                                <input type="text" class="form-control"
+                                                    value="<%= booking.customer.fname%> <%=  booking.customer.lname %>"
+                                                    disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="room">Room</label>
+                                                <input type="text" class="form-control"
+                                                    value="<%= booking.room.number %>" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="check_in">Check In time</label>
+                                                <input type="datetime-local" class="form-control" id="check_in"
+                                                    value="<%= new Date(booking.check_in).toLocaleString("sv-SE", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).replace(" ", "T") %>"
+                                                    disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="checkout">Checkout</label>
+                                                <input type="datetime-local" class="form-control" id="checkout"
+                                                    value="<%= new Date(booking.check_in).toLocaleString("sv-SE", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).replace(" ", "T") %>"
+                                                    disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="package">Package</label>
+                                                <% for(let package of data["packages"]){ %>
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" class="custom-control-input  customer-package"
+                                                        name="booking[package]" data-prices="<%= package.amount %>"
+                                                        data-price="<%= (booking.package.equals(package._id))? 0 :  package.amount%>"
+                                                        value="<%= package._id %>" id="<%= package._id %>"
+                                                        <%=  (booking.package.equals(package._id))?'checked':'' %> />
+                                                    <label class="custom-control-label"
+                                                        for="<%= package._id %>"><%= package.name %> -
+                                                        <%= package.amount %></label>
+                                                </div>
+                                                <%  } %>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <!-- <div class="col-md-12"> -->
+                                                <label for="ammenities">Ammenities</label>
+                                                <!-- </div> -->
+                                                <div class=" mx-1 row">
+                                                    <% for(let ammenities of data['ammenities']){ %>
+                                                    <div class="col-md-6 custom-control custom-checkbox">
+                                                        <input type="checkbox"
+                                                            class="custom-control-input customer-amminities"
+                                                            name="booking[ammenities][]"
+                                                            data-price="<%= (booking.ammenities.includes(ammenities._id)) ? 0 :  ammenities.price_per_unit %>"
+                                                            value="<%= ammenities._id %>" id="<%= ammenities._id %>"
+                                                            <%=  (booking.ammenities.includes(ammenities._id)) ? 'checked' : '' %> />
+                                                        <label class="custom-control-label"
+                                                            for="<%= ammenities._id %>"><%= ammenities.name %> -
+                                                            <%= ammenities.price_per_unit %></label>
+                                                    </div>
+                                                    <%  } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-12 col-md-12 col-12 mb-1">
+                                            <div class="form-group">
+                                                <input type="hidden" name="booking[sub_total]" id="total_val">
+                                                <h3 id="booking-total" class="text-danger">Total : <%= booking.total %>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-12 col-md-12 col-12 mb-1">
+                                            <div class="form-group">
+                                                <button class="btn btn-primary" type="submit">Submit for
+                                                    Payment</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Basic Inputs end -->
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
